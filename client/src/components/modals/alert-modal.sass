@@ -1,0 +1,19 @@
+@import '../../sass/base/variables'
+@import '../../sass/base/animations'
+
+@include spin
+
+.my-modal
+    .modal-content
+        border: 3px solid $primary-c
+        border-radius: 0
+        font-weight: 600
+        text-align: center
+        &__text
+            padding: 2rem 5rem
+    .modal-footer
+        border: none
+        padding-bottom: 1rem
+        justify-content: center
+        button
+            width: 30%

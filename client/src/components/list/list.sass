@@ -1,0 +1,53 @@
+@import '../../sass/base/variables'
+@import '../../sass/base/animations'
+
+@include spin
+
+.list
+    margin: 0
+    padding: 0
+    text-indent: 0
+    list-style-type: none
+    &__headers
+        font-weight: bold
+        color: $primary-c
+        padding: 0.5rem
+        div
+            vertical-align: middle
+        div:not(:first-child)
+            text-align: center
+    &__item
+        position: relative
+        border: 2px solid $primary-c
+        margin-bottom: 0.5rem
+        padding: 0.3rem
+        transition: 0.25s
+        cursor: pointer
+        text-transform: capitalize
+        flex-grow: 1
+        &-wrapper
+            div:not(:first-child)
+                text-align: center
+                border-left: 2px solid $primary-c
+        &:hover
+            background: $primary-c
+            color: #ffffff
+            .list__item-admin
+                img
+                    filter: invert(100%)
+            .list__item-wrapper
+                div:not(:first-child)
+                    border-left: 2px solid #ffffff
+
+.item
+    display: flex
+    align-items: center
+    &-name
+        width: 40%
+    &-divide
+        width: 30%
+    &-price
+        width: 30%
+    &-remove
+        padding-left: 0.5rem
+        width: calc(18px + 0.5rem)

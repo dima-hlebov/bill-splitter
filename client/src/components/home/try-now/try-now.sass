@@ -1,0 +1,22 @@
+@import '../../../sass/base/variables'
+@import '../../../sass/base/mixins'
+
+.try-now
+    height: 440px
+    background: url('./try-now-bg.jpg') center center/auto no-repeat
+    .button
+        margin-top: 30px
+        @include for-size($xs-device)
+            margin-top: 80px 
+            margin-left: 50px
+    @include for-size($s-device)
+        background-size: cover
+        background-position-x: right
+        height: 340px
+    .heading
+        margin-top: 3.125rem
+        color: $primary-c
+        font-weight: 700
+        @include for-size($xs-device)
+            text-align: center
+

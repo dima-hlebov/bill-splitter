@@ -1,0 +1,13 @@
+@import './variables'
+
+@mixin for-size($size) 
+    @media (max-width: $size) 
+        @content
+
+
+@mixin reset-link()
+    color: $primary-c
+    transition: 0.5s
+    &:hover
+        text-decoration: none
+        color: $secondary-c

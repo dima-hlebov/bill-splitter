@@ -1,0 +1,24 @@
+@import '../../sass/base/variables'
+@import '../../sass/base/mixins'
+
+.header
+    background-color: transparent
+    padding: 5px
+    &-wrapper
+        display: flex
+        align-items: center
+        justify-content: space-between
+    &__logo 
+        display: block
+        img
+            height: 4.375rem
+    &-nav
+        display: flex
+        justify-content: space-between
+        width: 100%
+        @include for-size($s-device)
+            display: none
+        a
+            font-weight: 600
+            font-size: 1.125em
+    

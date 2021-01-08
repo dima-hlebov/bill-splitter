@@ -1,0 +1,18 @@
+@import '../../sass/base/mixins'
+@import '../../sass/base/variables'
+
+html, body, #root, .app, .page-wrap
+    height: 100%
+html  
+    font-size: 100%
+    color: $dark-c
+    @include for-size($s-device)
+        font-size: 75%
+    .page-wrap
+        display: flex
+        flex-direction: column
+    .content-wrap
+        flex: 1 0 auto
+        font-weight: 500
+    a
+        @include reset-link()
