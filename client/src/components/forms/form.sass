@@ -8,12 +8,11 @@
 
 .my-form
     width:60%
-    margin-top: 2rem
+    margin-top: 1.5rem
     @include for-size($s-device)
         width: 100%
-    &--add-item
+    &--w100
         width: 100%
-        margin-top: 0
     &__error
         color: $secondary-c
         font-size: 0.825rem
@@ -29,21 +28,3 @@
         border: 1px solid $secondary-c !important
     label
         margin-bottom: 0
-    span.input-group-text
-        border-radius: 0
-        background: #ffffff
-        border: none
-        background-color: $primary-c
-        color: #ffffff
-        font-weight: 500
-    .my-form__input
-        border-radius: 0
-        border: 1px solid $primary-c
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button
-    -webkit-appearance: none
-    margin: 0
-
-input[type=number] 
-    -moz-appearance: textfield

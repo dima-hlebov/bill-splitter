@@ -9,12 +9,10 @@ const roomItem = ({text, admin, onDelete, onSelect}) => {
 
     return (
         <li className="list__item" onClick={onSelect}>
-            <div className="d-flex justify-content-between">
-                <div className="list__item-name">{text}</div>
-                <div className="list__item-wrapper d-flex">
-                    {admin ? <div className="list__item-admin d-flex align-items-center"><img src={adminImg} alt="get money back icon"/></div> : null}
-                    <Close onDelete={onDelete}/>
-                </div>
+            <div className="d-flex list__item-wrapper">
+                <div className="item-name">{text}</div>
+                {admin ? <div className="item-admin"><img src={adminImg} alt="admin icon"/></div> : null}
+                <div className="item-remove"><Close onDelete={onDelete}/></div>
             </div>
         </li>
     );

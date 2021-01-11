@@ -1,8 +1,8 @@
 import React from 'react'
 import './list.sass';
 import RoomItem from './roomItem';
-import AdminItem from './adminItem';
-import UserItem from './adminItem';
+import Item from './item';
+import UserItem from './item';
 
 const List = ({children, headers}) => {
 
@@ -24,4 +24,4 @@ const List = ({children, headers}) => {
     );
 };
 export default List;
-export {RoomItem, AdminItem, UserItem};
+export {RoomItem, Item, UserItem};

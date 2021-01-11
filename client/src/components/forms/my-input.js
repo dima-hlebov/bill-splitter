@@ -2,6 +2,8 @@ import React from 'react';
 import { useField, ErrorMessage } from 'formik';
 import { FormGroup, Label, Input, InputGroupAddon, InputGroupText } from 'reactstrap';
 
+import './input.sass';
+
 const MyInput = ({ prepand, label, children, formGroupStyle, ...props }) => {
     const [field, meta] = useField(props);
     const renderInput = () => {
@@ -9,11 +11,11 @@ const MyInput = ({ prepand, label, children, formGroupStyle, ...props }) => {
         return(
           <InputGroupAddon addonType="prepend">
             <InputGroupText>{prepand}</InputGroupText>
-            <Input className={"my-form__input " + (meta.touched && meta.error ? "my-form__input-error" : "")} {...field} {...props} />
+            <Input className={"my-input " + (meta.touched && meta.error ? "my-form__input-error" : "")} {...field} {...props} />
           </InputGroupAddon>
         )
       }else{
-        return (<Input className={"my-form__input " + (meta.touched && meta.error ? "my-form__input-error" : "")} {...field} {...props} />)
+        return (<Input className={"my-input " + (meta.touched && meta.error ? "my-form__input-error" : "")} {...field} {...props} />)
       }
     };
     return (

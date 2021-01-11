@@ -7,12 +7,10 @@ const ItemsSchema = new Schema({
   price: Number,
   divideAmoung: Number,
   isPaid: Boolean,
-  payees: [
-    {
+  payees: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Users"
-    }
-  ]
+      ref: "Users",
+    }]
 });
 
 const RoomsSchema = new Schema({

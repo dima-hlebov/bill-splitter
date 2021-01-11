@@ -6,31 +6,22 @@ import { Spinner } from 'reactstrap';
 
 import Form from '../forms/add-room-form.js';
 import Heading from "../heading";
-import List, {RoomItem} from '../list'
-import {WithRoomService} from '../with-service';
+import List, { RoomItem } from '../list'
+import { WithRoomService } from '../with-service';
 import { setRooms, removeRoom } from '../../actions/rooms'
 import { setSelectedRoom } from '../../actions/room'
 import { AlertModal } from "../modals";
 import { showModal, hideModal } from '../../actions/modal'
+import { formatDate, handleError } from '../../helper';
 
 const RoomsPage = ({RoomService, rooms, setRooms, removeRoom, setSelectedRoom, loading, modal, modalProps, showModal, hideModal}) => {
   let history = useHistory();
-
-  const handleUnauthError = (err) => {
-    if(err.response){
-      if(err.response.status === 401){
-        history.push("/sign-in");
-      }
-    }else{
-      console.log(err)
-    }
-  }
 
   useEffect(() =>{
     const fetchRooms = async () => {
       await RoomService.getRooms()
         .then(response => setRooms(response.data.rooms))
-        .catch(e => { handleUnauthError(e) });
+        .catch(e => { handleError(e, history) });
     };
     fetchRooms();
     // eslint-disable-next-line
@@ -39,7 +30,7 @@ const RoomsPage = ({RoomService, rooms, setRooms, removeRoom, setSelectedRoom, l
   const onDelete = (i, id) => {
     const deleteRooms = async () =>{
      return await RoomService.deleteRoom(id)
-      .catch(e => { handleUnauthError(e) });
+      .catch(e => { handleError(e, history) });
     };
     deleteRooms().then(() => hideModal()).then(() => removeRoom(i));
   }
@@ -50,14 +41,6 @@ const RoomsPage = ({RoomService, rooms, setRooms, removeRoom, setSelectedRoom, l
   };
 
   const renderRoomItems = () => {
-    const formatDate = (dateStr) => {
-      const date = new Date(dateStr);
-      const year = date.getUTCFullYear() + 1,
-            month = date.getUTCMonth(),
-            day = date.getUTCDate();
-      return `${day}.${month}.${year}`
-    }
-
     return rooms.map((item, i) => {
       const name = `${item.name} ${formatDate(item.createdAt)}`;
       return (
@@ -81,11 +64,17 @@ const RoomsPage = ({RoomService, rooms, setRooms, removeRoom, setSelectedRoom, l
             {  
               (loading) 
                 ? <div className="d-flex justify-content-center"><Spinner color="secondary"/></div>
-                  : (rooms) 
-                    ? <List headers={["Room name"]}>
-                        {renderRoomItems()}
-                      </List>
-                    : <div>You don't have rooms yet. Provide name to create one.</div>
+                  : (!rooms) 
+                    ? <div className="mt-4 mb-4 text-center">You don't have rooms yet. Provide name to create one.</div> 
+                    : (rooms.length !== 0)
+                      ? <List headers={[ 
+                          {header:'Name', className: 'item-name'}, 
+                          {header:'Admin', className: 'item-admin'}, 
+                          {header:'', className: 'item-remove'}
+                          ]}>
+                          {renderRoomItems()}
+                        </List>
+                      : <div>You don't have rooms yet. Provide name to create one.</div>
             }
           </Col>
         </Row>

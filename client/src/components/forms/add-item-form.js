@@ -53,34 +53,24 @@ const AddItemForm = ({RoomService, room, addItem}) => {
           setSubmitting(false);
         }}
       >
-        <Form className="my-form my-form--add-item">
-            {/* <div className="d-flex justify-content-end">
-              <MyInput
-                prepand="Sum"
-                name="sum"
-                type="text"
-                formGroupStyle={{width: "40%",marginBottom: "0.5rem"}}
-                disabled/>
-            </div> */}
+        <Form className="my-form my-form--w100">
             <MyInput
               label="Name"
               name="name"
               type="text"
               formGroupStyle={{marginBottom: "0.5rem"}}/>
-            <div className="d-flex justify-content-between">
-              <MyInput
+            {/* <div className="d-flex justify-content-between"> */}
+              {/* <MyInput
                   prepand="Divide amoung x"
                   name="divideAmoung"
                   type="number"
-                  formGroupStyle={{ marginBottom: "0.5rem"}}/>
+                  formGroupStyle={{ marginBottom: "0.5rem"}}/> */}
               <MyInput
                 prepand="Price"
                 name="price"
                 type="number"
-                formGroupStyle={{marginLeft: "0.25rem", marginBottom: "0.5rem"}}/>
-            </div>
-            
-               
+                formGroupStyle={{/*marginLeft: "0.25rem",*/ marginBottom: "0.5rem"}}/>
+            {/* </div> */}
             <Button className="button--w100" text="Add item"/>
         </Form>
       </Formik>

@@ -3,6 +3,17 @@
 
 @include spin
 
+@mixin selected()
+    background: $primary-c
+    color: #ffffff
+    .item-admin
+        img
+            filter: invert(100%)
+    .list__item-wrapper
+        div:not(:first-child)
+            border-left: 2px solid #ffffff
+    
+
 .list
     margin: 0
     padding: 0
@@ -29,25 +40,22 @@
             div:not(:first-child)
                 text-align: center
                 border-left: 2px solid $primary-c
+        &--selected
+            @include selected
         &:hover
-            background: $primary-c
-            color: #ffffff
-            .list__item-admin
-                img
-                    filter: invert(100%)
-            .list__item-wrapper
-                div:not(:first-child)
-                    border-left: 2px solid #ffffff
+            @include selected
 
 .item
     display: flex
     align-items: center
     &-name
-        width: 40%
+        width: 100%
     &-divide
         width: 30%
     &-price
         width: 30%
+    &-admin
+        width: 20%
     &-remove
         padding-left: 0.5rem
         width: calc(18px + 0.5rem)

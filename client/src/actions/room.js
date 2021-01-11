@@ -34,3 +34,17 @@ export const removeItem = (index) => {
         payload: index
     }
 };
+
+export const selectItem = (itemIndex, payee) => {
+    return{
+        type: types.ADD_PAYEE,
+        payload: {itemIndex, payee}
+    }
+};
+
+export const unSelectItem = (itemIndex, payee) => {
+    return{
+        type: types.REMOVE_PAYEE,
+        payload: {itemIndex, payee}
+    }
+};
