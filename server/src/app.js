@@ -23,6 +23,3 @@ require('./config/passport');
 app.use(require('./routes'));
 
 app.listen(8000, () => console.log('Server running on http://localhost:8000/'));
-
-"mongodb+srv://admin:FKppodygZlJ2iPOI@cluster0.dlnou.mongodb.net/billSplitter?retryWrites=true&w=majority"
-"mongodb+srv://admin:FKppodygZlJ2iPOI@cluster0.dlnou.mongodb.net/billSplitter?retryWrites=true&w=majority"
