@@ -120,8 +120,8 @@ function RoomPage({ RoomService, loading, user, room, setRoom, removeItem, selec
                     <Heading tag="h2" className="heading--2" text={`Room: ${(room.name ? room.name : "")} ${(formatDate(room.createdAt))}`}/>
                     <Row>
                         <Col md={{size: 5}}>
-                            <Heading tag="h3" className="heading--3 heading--center" text="Splitters"/>
-                            <Share link={`http://localhost:3000/rooms/${room._id}/invite`}/>
+                                <Heading tag="h3" className="heading--3 heading--center" text="Splitters"/>
+                                <Share link={`http://localhost:3000/rooms/${room._id}/invite`}/>
                             <Splitters>
                                 {renderSplitters()}
                             </Splitters>
