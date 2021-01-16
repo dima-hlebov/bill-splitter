@@ -21,7 +21,7 @@ const RoomsPage = ({RoomService, rooms, setRooms, removeRoom, setSelectedRoom, l
     const fetchRooms = async () => {
       await RoomService.getRooms()
         .then(response => setRooms(response.data.rooms))
-        .catch(e => { handleError(e, history) });
+        .catch(e => handleError(e.response, history));
     };
     fetchRooms();
     // eslint-disable-next-line
@@ -30,7 +30,7 @@ const RoomsPage = ({RoomService, rooms, setRooms, removeRoom, setSelectedRoom, l
   const onDelete = (i, id) => {
     const deleteRooms = async () =>{
      return await RoomService.deleteRoom(id)
-      .catch(e => { handleError(e, history) });
+      .catch(e => handleError(e.response, history));
     };
     deleteRooms().then(() => hideModal()).then(() => removeRoom(i));
   }
@@ -42,6 +42,7 @@ const RoomsPage = ({RoomService, rooms, setRooms, removeRoom, setSelectedRoom, l
 
   const renderRoomItems = () => {
     return rooms.map((item, i) => {
+      
       const name = `${item.name} ${formatDate(item.createdAt)}`;
       return (
         <RoomItem 
@@ -69,8 +70,8 @@ const RoomsPage = ({RoomService, rooms, setRooms, removeRoom, setSelectedRoom, l
                     : (rooms.length !== 0)
                       ? <List headers={[ 
                           {header:'Name', className: 'item-name'}, 
-                          {header:'Admin', className: 'item-admin'}, 
-                          {header:'', className: 'item-remove'}
+                          // {header:'Admin', className: 'item-admin'}, 
+                          // {header:'', className: 'item-remove'}
                           ]}>
                           {renderRoomItems()}
                         </List>

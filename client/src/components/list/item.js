@@ -17,16 +17,18 @@ const Item = ({text, divideAmoung, payees, price, onDelete, admin, onToggleItem,
     };
 
     return (
-        <li className="list__item" onClick={onToggleItem}>
-            <Splitters className="splitters--badges">
-                {renderSplitters()}
-            </Splitters>
-            <div className="d-flex list__item-wrapper">
-                <div className="item-name">{text}</div>
-                {/* <div className="item-divide">x {divideAmoung}</div> */}
-                <div className="item-price">{price}</div>
-                {admin ? <div className="item-remove"><Close onDelete={onDelete}/></div> : null}
-            </div>
+        <li >
+            <button className="list__item" onClick={onToggleItem}>
+                <Splitters className="splitters--badges">
+                    {renderSplitters()}
+                </Splitters>
+                <div className="d-flex list__item-wrapper">
+                    <div className="item-name">{text}</div>
+                    <div className="item-divide">x {divideAmoung}</div>
+                    <div className="item-price">{price}</div>
+                    {admin ? <div className="item-remove"><Close onDelete={onDelete}/></div> : null}
+                </div>
+            </button>
         </li>
     );
 };

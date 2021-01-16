@@ -7,11 +7,13 @@ import { useHistory } from 'react-router-dom';
 import MyInput from './my-input';
 import Button from '../button';
 import { WithRoomService } from '../with-service';
+import { handleError } from '../../helper';
 import { addItem } from '../../actions/room';
 
 import './form.sass';
 
 const AddItemForm = ({RoomService, room, addItem}) => {
+  const history = useHistory();
 
   return (
       <Formik
@@ -23,10 +25,10 @@ const AddItemForm = ({RoomService, room, addItem}) => {
         }}
         validationSchema={Yup.object({
             name: Yup.string().required('Name required'),
-            price: Yup.number().required('Price required').positive('Price must be positive').integer(),
+            price: Yup.number().required('Price required').positive('Price must be positive'),
             divideAmoung: Yup.number().required('Divide amoung required').positive('Divide amoung must be positive').integer()
         })}
-        onSubmit={(values, { setSubmitting, setFieldError, resetForm }) => {
+        onSubmit={(values, { setSubmitting, resetForm }) => {
           const { name, price, divideAmoung } = values;
           const newItem = {
             name,
@@ -41,37 +43,31 @@ const AddItemForm = ({RoomService, room, addItem}) => {
               resetForm({});
             })
             .catch(e => {
-              if(e.response){
-                  if(e.response.status === 401){
-                    useHistory.push("/sign-in");
-                  }
-              }else{
-                console.log(e);
-              }
+              handleError(e, history);
             });
 
           setSubmitting(false);
         }}
       >
         <Form className="my-form my-form--w100">
-            <MyInput
-              label="Name"
-              name="name"
-              type="text"
-              formGroupStyle={{marginBottom: "0.5rem"}}/>
-            {/* <div className="d-flex justify-content-between"> */}
-              {/* <MyInput
-                  prepand="Divide amoung x"
-                  name="divideAmoung"
-                  type="number"
-                  formGroupStyle={{ marginBottom: "0.5rem"}}/> */}
-              <MyInput
-                prepand="Price"
-                name="price"
-                type="number"
-                formGroupStyle={{/*marginLeft: "0.25rem",*/ marginBottom: "0.5rem"}}/>
-            {/* </div> */}
-            <Button className="button--w100" text="Add item"/>
+          <MyInput
+            label="Name"
+            name="name"
+            type="text"
+            formGroupStyle={{marginBottom: "0.5rem"}}/>
+          <div className="d-flex justify-content-between">
+          <MyInput
+              prepand="Divide amoung x"
+              name="divideAmoung"
+              type="number"
+              formGroupStyle={{ marginBottom: "0.5rem"}}/>
+          <MyInput
+            prepand="Price"
+            name="price"
+            type="number"
+            formGroupStyle={{/*marginLeft: "0.25rem",*/ marginBottom: "0.5rem"}}/>
+          </div>
+          <Button className="button--w100" text="Add item"/>
         </Form>
       </Formik>
   );

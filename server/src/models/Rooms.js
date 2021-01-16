@@ -6,7 +6,10 @@ const ItemsSchema = new Schema({
   name: String,
   price: Number,
   divideAmoung: Number,
-  isPaid: Boolean,
+  splitersPaid: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Users",
+  }],
   payees: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Users",

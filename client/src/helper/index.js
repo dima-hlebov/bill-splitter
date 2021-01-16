@@ -6,12 +6,14 @@ export const formatDate = (dateStr) => {
     return `${day}.${month}.${year}`
 }
 
-export const handleError = (err, history) => {
-    if(err.response){
-      if(err.response.status === 401){
+export const handleError = (response, history) => {
+  switch(response.status){
+      case 401:
         history.push("/sign-in");
-      }
-    }else{
-      console.log(err)
-    }
+        return response.data
+      case 403:
+        return response.data
+      default:
+        return "Some server error has occured"
+  }
 }

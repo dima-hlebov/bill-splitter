@@ -4,5 +4,6 @@ import HomePage from './home-page';
 import ProfilePage from './profile-page';
 import RoomsPage from './rooms-page';
 import RoomPage from './room-page';
+import InvitePage from './invite-page';
 
-export {HomePage, LoginPage, SingUpPage, ProfilePage, RoomsPage, RoomPage};
+export {HomePage, LoginPage, SingUpPage, ProfilePage, RoomsPage, RoomPage, InvitePage};

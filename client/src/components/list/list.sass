@@ -1,5 +1,6 @@
 @import '../../sass/base/variables'
 @import '../../sass/base/animations'
+@import '../../sass/base/mixins'
 
 @include spin
 
@@ -24,10 +25,16 @@
         color: $primary-c
         padding: 0.5rem
         div
-            vertical-align: middle
+            display: flex
+            align-items: center
+            line-height: 0.825rem
         div:not(:first-child)
             text-align: center
+            justify-content: center
     &__item
+        @include reset-button
+        display: block
+        width: 100%
         position: relative
         border: 2px solid $primary-c
         margin-bottom: 0.5rem
@@ -37,7 +44,10 @@
         text-transform: capitalize
         flex-grow: 1
         &-wrapper
+            div:first-child
+                text-align: left
             div:not(:first-child)
+                word-wrap: break-all
                 text-align: center
                 border-left: 2px solid $primary-c
         &--selected
@@ -58,4 +68,4 @@
         width: 20%
     &-remove
         padding-left: 0.5rem
-        width: calc(18px + 0.5rem)
+        width: calc(32px + 0.5rem)

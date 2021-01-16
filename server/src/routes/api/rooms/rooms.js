@@ -43,7 +43,7 @@ router.get('/', auth.required, (req, res, next) => {
     .sort({upadatedAt: -1})
     .then(user => {
       const { rooms } = user.toObject();
-      return rooms.map(room => room.admin === id ? {...room, isAdmin: true} : null); 
+      return rooms.map(room => room.admin === id ? {...room, isAdmin: true} : {...room});
     })
     .then(rooms => res.json({ rooms }))
     .catch(err => res.status(500).json(err));
@@ -53,15 +53,26 @@ router.get('/', auth.required, (req, res, next) => {
 router.delete('/:roomId', auth.required, (req, res, next) => {
   const { roomId } = req.params
   const { payload: { id: userId }} = req;
-  return Rooms.findByIdAndDelete(roomId)
-    .then(response => {
-      Users.findByIdAndUpdate(
-        userId,
-        { $pull: { rooms: roomId} },
-        { new: true, useFindAndModify: false }
-      ).then(response => res.status(200).json(response)).catch(e => console.log(e))
+  return Rooms.findById(roomId)
+    .then(room => {
+      if(room.admin === userId){
+        return Rooms.findByIdAndDelete(roomId)
+          .then(response => {
+            return Users.findByIdAndUpdate(
+              userId,
+              { $pull: { rooms: roomId} },
+              { new: true, useFindAndModify: false }
+            ).then(response => res.status(200).json(response)).catch(e => res.status(500).json(e))
+          })
+          .catch(err => res.satus(500).json(err))
+      }
+      return Users.findByIdAndUpdate(
+          userId,
+          { $pull: { rooms: roomId} },
+          { new: true, useFindAndModify: false }
+        ).then(response => res.status(200).json(response)).catch(e => res.status(500).json(e))
     })
-    .catch(err => res.satus(500).json(err))
+  
 });
 
 // get chosen room
@@ -81,24 +92,23 @@ router.get('/:roomId', auth.required, (req, res, next) => {
 
         let sum = 0;
         roomObj.items.map((item, i )=> {
-          console.log(item)
           if(item.payees.filter(payee => payee._id.toString() === userId).length > 0){
-            sum+=item.price;
+            sum+=item.price/item.divideAmoung;
           }
         });
 
-        const extendedRoom = room.admin === userId ? {...roomObj, isAdmin: true, sum} : room
+        const extendedRoom = room.admin === userId ? {...roomObj, isAdmin: true, sum} : {...roomObj, sum}
         return res.json({ room: extendedRoom });
       }
     )
     .catch(err => res.status(500).json(err));
 });
 
-// invite 
-router.get('/:roomId/invite', auth.required, (req, res, next) => {
+// invite
+router.put('/:roomId/invite', auth.required, (req, res, next) => {
   const { params: { roomId }, payload: { id: userId }} = req;
 
-  return User.findById(userId)
+  return Users.findById(userId)
     .then(user => {
       if(!user.rooms.includes(roomId)){
         return Users.findByIdAndUpdate(
@@ -107,12 +117,18 @@ router.get('/:roomId/invite', auth.required, (req, res, next) => {
           { new: true, useFindAndModify: false }
         )
         .then(() => {
-          return Rooms.findByIdAndUpdate(
-            roomId,
-            { $push: { members: userId } },
-            { new: true, useFindAndModify: false }
-          )
-          .then(response => res.status(200).json(response))
+          Rooms.findById(roomId)
+            .then(room => {
+              if(!room.members.includes(userId)){
+                return Rooms.findByIdAndUpdate(
+                  roomId,
+                  { $push: { members: userId } },
+                  { new: true, useFindAndModify: false }
+                )
+                .then(response => res.status(200).json(room))
+              }
+              return res.status(200).json(room)
+            })          
         })
         .catch(err =>  res.status(500).json(err))
       }
@@ -123,17 +139,22 @@ router.get('/:roomId/invite', auth.required, (req, res, next) => {
 // add new item
 router.post('/:roomId/items', auth.required, (req, res, next) => {
   const { body: newItem, params: { roomId }, payload: { id: userId }} = req;
+  
+  const itemWRoundedPrice = {
+    ...newItem,
+    price: +newItem.price.toFixed(2)
+  }
 
   return Rooms.findById(roomId)
-  .then(room =>{ 
+  .then(room =>{
     if (room.admin === userId){
       return Rooms.findByIdAndUpdate(
         roomId,
-        { $push: { items: newItem } },
+        { $push: { items: itemWRoundedPrice } },
         { new: true, useFindAndModify: false }
       )
       .then(room => res.json({ room }))
-      .catch(err => res.status(500).json(err))  
+      .catch(err => res.status(500).json(err))
     }
 
     let err = new Error('Permission to add item denied')
@@ -143,9 +164,9 @@ router.post('/:roomId/items', auth.required, (req, res, next) => {
 
 // delete item
 router.delete('/:roomId/items/:itemId', auth.required, (req, res, next) => {
-  const { params: {roomId, itemId}, payload: { id: userId }} = req; 
+  const { params: {roomId, itemId}, payload: { id: userId }} = req;
   return Rooms.findById(roomId)
-    .then(room =>{ 
+    .then(room =>{
       if (room.admin === userId){
         return Rooms.findByIdAndUpdate(
           roomId,
@@ -153,12 +174,11 @@ router.delete('/:roomId/items/:itemId', auth.required, (req, res, next) => {
           { new: true, useFindAndModify: false }
         )
         .then(room => res.json({ room }))
-        .catch(err => res.status(500).json(err)) 
+        .catch(err => res.status(500).json(err))
       }
-      let err = new Error('Permission to delete item denied')
-      return res.status(403).json(err);
+      return res.status(403).json('Permission to delete item denied');
     })
-    .catch(err => res.status(500).json(err)) 
+    .catch(err => res.status(500).json(err))
 });
 
 // add payee for an item
@@ -168,21 +188,20 @@ router.post('/:roomId/items/:itemId/payee', auth.required, (req, res, next) => {
     roomId,
     {items: { $elemMatch: { _id: itemId}}}
     )
-    .then(response => { 
+    .then(response => {
       if(response.items[0].payees.length !== response.items[0].divideAmoung && !response.items[0].payees.includes(userId)){
         return Rooms.findByIdAndUpdate(
             roomId,
             { $push: { "items.$[i].payees": userId } },
             { "arrayFilters": [{"i._id": mongoose.Types.ObjectId(itemId)}], new: true, useFindAndModify: false},
           )
-        .then(room => res.json({ room }))
-        .catch(err => res.status(500).json(err)) 
+          .then(room => res.json({ room }))
+          .catch(err => res.status(500).json(err))
       }
-      let err = new Error('Item has been taken already')
-      return res.status(403).json(err);
+      return res.status(403).json('Item has been taken already');
     })
-    .catch(err => res.status(500).json(err)) 
-  
+    .catch(err => res.status(500).json(err))
+
 });
 
 // remove payee from an item
@@ -195,8 +214,32 @@ router.delete('/:roomId/items/:itemId/payee', auth.required, (req, res, next) =>
       { "arrayFilters": [{"i._id": mongoose.Types.ObjectId(itemId)}], new: true, useFindAndModify: false},
     )
     .then(room => res.json({ room }))
-    .catch(err => res.status(500).json(err)) 
+    .catch(err => res.status(500).json(err))
 });
+
+// paid true
+router.put('/:roomId/paid', auth.required, (req, res, next) => {
+  const { params: {roomId}, payload: { id: userId } } = req;
+
+  
+});
+
+// // payment
+// router.get('/:roomId/payment', auth.required, (req, res, next) => {
+//   var LiqPay = require('liqpay-sdk');
+//   var liqpay = new LiqPay('sandbox_i62052253639', 'sandbox_dJfnLjRYyF8gBnzXZAxLUy36RyDMDEp2YCchSizU');
+//   var html = liqpay.cnb_form({
+//   'action'         : 'p2p',
+//   'amount'         : '1',
+//   'currency'       : 'USD',
+//   'description'    : 'description text',
+//   'order_id'       : 'order_id_1',
+//   'version'        : '3'
+//   })
+
+
+// });
+
 
 
 

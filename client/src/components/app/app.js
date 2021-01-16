@@ -4,7 +4,7 @@ import { Switch, Route} from "react-router-dom";
 import Header from '../header/header';
 import Burger from '../burger/burger';
 import Footer from '../footer/footer';
-import {HomePage, LoginPage, SingUpPage, RoomsPage, RoomPage} from '../pages';
+import {HomePage, LoginPage, SingUpPage, RoomsPage, RoomPage, InvitePage} from '../pages';
 
 import './app.sass';
 
@@ -30,6 +30,9 @@ function App() {
             </Route>
             <Route exact path="/rooms/:id">
               <RoomPage/>
+            </Route>
+            <Route exact path="/rooms/:id/invite">
+              <InvitePage/>
             </Route>
           </Switch>
         </div>

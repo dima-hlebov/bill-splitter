@@ -51,7 +51,7 @@ const SignupForm = ({AuthService}) => {
         }}
       >
       {props => (
-        <Form className="my-form">
+        <Form className="my-form my-form--max-w">
           <MyInput
             label="First Name"
             name="firstName"

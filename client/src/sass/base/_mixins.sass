@@ -11,3 +11,14 @@
     &:hover
         text-decoration: none
         color: $secondary-c
+
+@mixin reset-button()
+    border: none
+    margin: 0
+    padding: 0
+    width: auto
+    background: transparent
+    overflow: visible
+    &:focus
+        outline: none
+        box-shadow: 0 0 0.3rem $secondary-c

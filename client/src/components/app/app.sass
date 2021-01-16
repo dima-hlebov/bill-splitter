@@ -3,11 +3,14 @@
 
 html, body, #root, .app, .page-wrap
     height: 100%
+
 html  
-    font-size: 100%
+    font-size: 80%
     color: $dark-c
     @include for-size($s-device)
         font-size: 75%
+    @include for-size($xs-device)
+        font-size: 65%
     .page-wrap
         display: flex
         flex-direction: column

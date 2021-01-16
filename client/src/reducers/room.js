@@ -53,7 +53,7 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 room: {
                     ...state.room,
-                    sum: state.room.sum + state.room.items[payload.itemIndex].price,
+                    sum: state.room.sum + state.room.items[payload.itemIndex].price/state.room.items[payload.itemIndex].divideAmoung,
                     items: state.room.items.map((item, i) => {
                         if(i === payload.itemIndex){
                             return {
@@ -69,7 +69,7 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 room: {
                     ...state.room,
-                    sum: state.room.sum - state.room.items[payload.itemIndex].price,
+                    sum: state.room.sum - state.room.items[payload.itemIndex].price/state.room.items[payload.itemIndex].divideAmoung,
                     items: state.room.items.map((item, i) => {
                         if(i === payload.itemIndex){
                             return {
