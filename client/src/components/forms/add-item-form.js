@@ -20,8 +20,7 @@ const AddItemForm = ({RoomService, room, addItem}) => {
         initialValues={{
           name: '',
           price: 0,
-          divideAmoung: 1,
-          sum: 0
+          divideAmoung: 1
         }}
         validationSchema={Yup.object({
             name: Yup.string().required('Name required'),

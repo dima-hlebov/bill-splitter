@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
 const router = require('express').Router();
 const auth = require('../auth');
-const { response } = require('express');
 const Users = mongoose.model('Users');
 const Rooms = mongoose.model('Rooms');
 
-// create new room document, add room to user, add admin to members
+// create new room document, add room to user, add admin to splitters
 router.post('/', auth.required, (req, res, next) => {
   const { body: room, payload: { id }} = req;
 
@@ -16,7 +15,7 @@ router.post('/', auth.required, (req, res, next) => {
   }
 
   room.admin = id;
-  room.members = [id];
+  room.splitters = [{splitter: id}];
 
   return Rooms.create(room)
     .then(newRoom => {
@@ -25,7 +24,7 @@ router.post('/', auth.required, (req, res, next) => {
         { $push: { rooms: newRoom._id } },
         { new: true, useFindAndModify: false }
       )
-      .catch(err =>  res.status(500).json(err))
+      .catch(err =>  res.status(500).json(err));
 
       return newRoom;
     })
@@ -51,7 +50,7 @@ router.get('/', auth.required, (req, res, next) => {
 
 // delete room document and delete room from array of user's rooms
 router.delete('/:roomId', auth.required, (req, res, next) => {
-  const { roomId } = req.params
+  const { roomId } = req.params;
   const { payload: { id: userId }} = req;
   return Rooms.findById(roomId)
     .then(room => {
@@ -62,16 +61,16 @@ router.delete('/:roomId', auth.required, (req, res, next) => {
               userId,
               { $pull: { rooms: roomId} },
               { new: true, useFindAndModify: false }
-            ).then(response => res.status(200).json(response)).catch(e => res.status(500).json(e))
+            ).then(response => res.status(200).json(response)).catch(e => res.status(500).json(e));
           })
-          .catch(err => res.satus(500).json(err))
+          .catch(err => res.satus(500).json(err));
       }
       return Users.findByIdAndUpdate(
           userId,
           { $pull: { rooms: roomId} },
           { new: true, useFindAndModify: false }
-        ).then(response => res.status(200).json(response)).catch(e => res.status(500).json(e))
-    })
+        ).then(response => res.status(200).json(response)).catch(e => res.status(500).json(e));
+    });
   
 });
 
@@ -80,7 +79,7 @@ router.get('/:roomId', auth.required, (req, res, next) => {
   const { roomId } = req.params;
   const { payload: { id: userId }} = req;
   return Rooms.findById(roomId)
-    .populate("members")
+    .populate('splitters.splitter')
     .populate({
       path: "items",
       populate: {
@@ -90,14 +89,7 @@ router.get('/:roomId', auth.required, (req, res, next) => {
     .then(room => {
         const roomObj = room.toObject();
 
-        let sum = 0;
-        roomObj.items.map((item, i )=> {
-          if(item.payees.filter(payee => payee._id.toString() === userId).length > 0){
-            sum+=item.price/item.divideAmoung;
-          }
-        });
-
-        const extendedRoom = room.admin === userId ? {...roomObj, isAdmin: true, sum} : {...roomObj, sum}
+        const extendedRoom = room.admin === userId ? {...roomObj, isAdmin: true} : {...roomObj};
         return res.json({ room: extendedRoom });
       }
     )
@@ -111,29 +103,24 @@ router.put('/:roomId/invite', auth.required, (req, res, next) => {
   return Users.findById(userId)
     .then(user => {
       if(!user.rooms.includes(roomId)){
-        return Users.findByIdAndUpdate(
-          userId,
-          { $push: { rooms: roomId } },
-          { new: true, useFindAndModify: false }
-        )
-        .then(() => {
-          Rooms.findById(roomId)
-            .then(room => {
-              if(!room.members.includes(userId)){
-                return Rooms.findByIdAndUpdate(
-                  roomId,
-                  { $push: { members: userId } },
-                  { new: true, useFindAndModify: false }
-                )
-                .then(response => res.status(200).json(room))
-              }
-              return res.status(200).json(room)
-            })          
-        })
-        .catch(err =>  res.status(500).json(err))
-      }
-    })
-    .catch(err => res.status(400).json(err))
+        user.rooms.push(roomId);
+        return user.save()
+          .then(() => {
+            Rooms.findById(roomId)
+              .then(room => {
+                if(!(room.splitters.filter( splitter => splitter.splitter._id.toString() === userId).length > 0)){
+                  room.splitters.push({splitter: userId});
+                  return room.save()
+                    .then(response => res.status(200).json(room));
+                }
+                return res.status(200).json(room);
+              });       
+          })
+          .catch(err =>  res.status(500).json(err));
+        }
+        return res.status(200).json(user);
+      })
+    .catch(err => res.status(500).json(err));
 });
 
 // add new item
@@ -143,104 +130,180 @@ router.post('/:roomId/items', auth.required, (req, res, next) => {
   const itemWRoundedPrice = {
     ...newItem,
     price: +newItem.price.toFixed(2)
-  }
+  };
 
   return Rooms.findById(roomId)
   .then(room =>{
     if (room.admin === userId){
-      return Rooms.findByIdAndUpdate(
-        roomId,
-        { $push: { items: itemWRoundedPrice } },
-        { new: true, useFindAndModify: false }
-      )
-      .then(room => res.json({ room }))
-      .catch(err => res.status(500).json(err))
+      room.items.push(itemWRoundedPrice);
+      return room.save()
+        .then(room => res.json({ room }))
+        .catch(err => res.status(500).json(err));
     }
 
-    let err = new Error('Permission to add item denied')
+    let err = new Error('Permission to add item denied');
     return res.status(403).json(err);
   });
 });
 
-// delete item
+// delete item and decrece to pay of splitters, who was paying for this item
 router.delete('/:roomId/items/:itemId', auth.required, (req, res, next) => {
   const { params: {roomId, itemId}, payload: { id: userId }} = req;
   return Rooms.findById(roomId)
     .then(room =>{
       if (room.admin === userId){
-        return Rooms.findByIdAndUpdate(
-          roomId,
-          { $pull: { items: { _id: itemId} } },
-          { new: true, useFindAndModify: false }
-        )
-        .then(room => res.json({ room }))
-        .catch(err => res.status(500).json(err))
+        const selectedItemIndex = room.items.findIndex(item => item._id.toString() === itemId);
+        const selectedItem = room.items[selectedItemIndex];
+
+        room.splitters.map(splitter => {
+          if(selectedItem.payees.includes(splitter.splitter._id)){
+            splitter.toPay -= selectedItem.price/selectedItem.divideAmoung;
+            return splitter;
+          }
+          return splitter;
+        });
+
+        room.items = room.items.filter(item => item._id.toString() !== itemId);
+
+        return room.save()
+          .then(room => res.json({ room }))
+          .catch(err => console.log(err))
+          .catch(err => res.status(500).json(err));
       }
       return res.status(403).json('Permission to delete item denied');
     })
-    .catch(err => res.status(500).json(err))
+    .catch(err => console.log(err))
+    .catch(err => res.status(500).json(err));
 });
 
-// add payee for an item
+// add payee for an item and increse toPay value
 router.post('/:roomId/items/:itemId/payee', auth.required, (req, res, next) => {
   const { params: {roomId, itemId}, payload: { id: userId } } = req;
-  return Rooms.findById(
-    roomId,
-    {items: { $elemMatch: { _id: itemId}}}
-    )
-    .then(response => {
-      if(response.items[0].payees.length !== response.items[0].divideAmoung && !response.items[0].payees.includes(userId)){
-        return Rooms.findByIdAndUpdate(
-            roomId,
-            { $push: { "items.$[i].payees": userId } },
-            { "arrayFilters": [{"i._id": mongoose.Types.ObjectId(itemId)}], new: true, useFindAndModify: false},
-          )
+  return Rooms.findById(roomId)
+    .then(room => {
+      const selectedItemIndex = room.items.findIndex(item => item._id.toString() === itemId);
+      const selectedItem = room.items[selectedItemIndex];
+      if(selectedItem.length !== selectedItem.divideAmoung && !selectedItem.payees.includes(userId)){
+        // add payee to an item
+        selectedItem.payees.push(userId);
+        // increse toPay value for payee
+        room.splitters.map(splitter => {
+          if(splitter.splitter._id.toString() === userId){
+            splitter.toPay += selectedItem.price/selectedItem.divideAmoung;
+            return splitter;
+          }
+          return splitter;
+        });
+        return room.save()
           .then(room => res.json({ room }))
-          .catch(err => res.status(500).json(err))
+          .catch(err => res.status(500).json(err));
       }
       return res.status(403).json('Item has been taken already');
     })
-    .catch(err => res.status(500).json(err))
+    .catch(err => res.status(500).json(err));
 
 });
 
-// remove payee from an item
+// remove payee from an item add decrece toPay value
 router.delete('/:roomId/items/:itemId/payee', auth.required, (req, res, next) => {
   const { params: {roomId, itemId}, payload: { id: userId } } = req;
 
-  return Rooms.findByIdAndUpdate(
-      roomId,
-      { $pull: { "items.$[i].payees": userId }},
-      { "arrayFilters": [{"i._id": mongoose.Types.ObjectId(itemId)}], new: true, useFindAndModify: false},
-    )
-    .then(room => res.json({ room }))
-    .catch(err => res.status(500).json(err))
+  return Rooms.findById(roomId)
+    .then(room => {
+      const selectedItemIndex = room.items.findIndex(item => item._id.toString() === itemId);
+      const selectedItem = room.items[selectedItemIndex];
+      selectedItem.payees = selectedItem.payees.filter(payee => payee.toString() !== userId);
+
+      room.splitters.map(splitter => {
+        if(splitter.splitter._id.toString() === userId){
+          splitter.toPay -= selectedItem.price/selectedItem.divideAmoung;
+          return splitter;
+        }
+        return splitter;
+      });
+      return room.save()
+        .then(room => res.json({ room }))
+        .catch(err => res.status(500).json(err));
+    })
+    .catch(err => res.status(500).json(err));
+    
 });
 
-// paid true
-router.put('/:roomId/paid', auth.required, (req, res, next) => {
-  const { params: {roomId}, payload: { id: userId } } = req;
+// if splitter.isSplitterPaid true => splitter paid true and check if items was fully paid if was item.isPaid true
+// else splitter.isSplitterPaid false => splitter paid false and check if items was fully paid if wasn't item.isPaid false
+router.put('/:roomId/payment', auth.required, (req, res, next) => {
+  const { params: {roomId}, payload: { id: userId }, body: {isSplitterPaid} } = req;
+  return Rooms.findById(roomId)
+    .then(room => {
+      room.splitters.map(splitter => {
+        if(splitter.splitter._id.toString() === userId){
+          if(isSplitterPaid){
+            splitter.splitterPaid = true;
+            return splitter;
+          }else{
+            splitter.splitterPaid = false;
+            return splitter;
+          }
+          return splitter;
+        }
+        // splitter.splitterPaid = false;
+        return splitter;
+      });
 
-  
+      // chek items was fully paid
+      const paidSplitters = room.splitters.filter(splitter => splitter.splitterPaid);
+      room.items.map(item => {
+        const paidPayeesNum = item.payees.filter(payee =>{
+          return paidSplitters.filter(paidSplitter => {
+            return paidSplitter.splitter._id.toString() === payee.toString();
+          }).length > 0;
+        }).length;
+        if(isSplitterPaid && paidPayeesNum === item.divideAmoung){
+          item.isPaid = true;
+          return item;
+        }
+        item.isPaid = false;
+        return item;
+      });
+      return room.save()
+        .then(room => res.json({ room }))
+        .catch(err => res.status(500).json(err));
+    })
+    .catch(err => res.status(500).json(err));
 });
 
-// // payment
-// router.get('/:roomId/payment', auth.required, (req, res, next) => {
-//   var LiqPay = require('liqpay-sdk');
-//   var liqpay = new LiqPay('sandbox_i62052253639', 'sandbox_dJfnLjRYyF8gBnzXZAxLUy36RyDMDEp2YCchSizU');
-//   var html = liqpay.cnb_form({
-//   'action'         : 'p2p',
-//   'amount'         : '1',
-//   'currency'       : 'USD',
-//   'description'    : 'description text',
-//   'order_id'       : 'order_id_1',
-//   'version'        : '3'
-//   })
+// router.put('/:roomId/unpayment', auth.required, (req, res, next) => {
+//   const { params: {roomId}, payload: { id: userId } } = req;
 
+//   return Rooms.findById(roomId)
+//     .then(room => {
+//       room.splitters.map(splitter => {
+//         if(splitter.splitter._id.toString() === userId){
+//           splitter.splitterPaid = false;
+//           return splitter;
+//         }
+//         return splitter;
+//       });
 
+//       // chek what items was fully paid
+//       const paidSplitters = room.splitters.filter(splitter => splitter.splitterPaid);
+//       room.items.map(item => {
+//         const paidPayeesNum = item.payees.filter(payee =>{
+//           return paidSplitters.filter(paidSplitter => {
+//             return paidSplitter.splitter._id.toString() === payee.toString();
+//           }).length > 0;
+//         }).length;
+//         if(paidPayeesNum !== item.divideAmoung){
+//           item.isPaid = false;
+//           return item;
+//         }
+//         return item;
+//       });
+//       return room.save()
+//         .then(room => res.json({ room }))
+//         .catch(err => res.status(500).json(err));
+//     })
+//     .catch(err => res.status(500).json(err));
 // });
-
-
-
 
 module.exports = router;

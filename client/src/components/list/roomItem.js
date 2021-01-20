@@ -11,9 +11,9 @@ const roomItem = ({text, admin, onDelete, onSelect}) => {
         <li>
             <button className="list__item" onClick={onSelect}>
                 <div className="d-flex list__item-wrapper">
-                    <div className="item-name">{text}</div>
-                    {admin ? <div className="item-admin"><img src={adminImg} alt="admin icon"/></div> : null}
-                    <div className="item-remove"><Close onDelete={onDelete}/></div>
+                    <div className="item item-name">{text}</div>
+                    {admin ? <div className="item item-admin"><img src={adminImg} alt="admin icon"/></div> : null}
+                    <div className="item item-remove"><Close onDelete={onDelete}/></div>
                 </div>
             </button>
         </li>

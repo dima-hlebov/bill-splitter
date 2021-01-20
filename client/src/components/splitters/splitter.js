@@ -1,7 +1,7 @@
 import React from 'react';
 import { UncontrolledTooltip } from 'reactstrap';
 
-const Splitter = ({ firstName, lastName, id }) => {
+const Splitter = ({ firstName, lastName, id, toPay }) => {
 
     const getShortName = (firstName, lastName) => {
         return `${firstName[0]}${lastName[0]}`;
@@ -14,7 +14,8 @@ const Splitter = ({ firstName, lastName, id }) => {
             </div>
             {id 
                 ? <UncontrolledTooltip  placement="top" autohide={false} target={id}>
-                        {`${firstName} ${lastName}`}
+                        <div>{`${firstName} ${lastName}`}</div>
+                        <div>{toPay ? `To pay: ${toPay}` : null}</div>
                   </UncontrolledTooltip>
                 : null
             }

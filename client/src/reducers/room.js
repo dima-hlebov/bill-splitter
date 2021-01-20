@@ -43,6 +43,13 @@ const reducer = (state = initialState, action) => {
         case types.REMOVE_ITEM:
             return {
                 ...state,
+                splitters: state.room.splitters.map(splitter => {
+                    if(state.room.items[payload].payees.filter(payee => payee._id === splitter.splitter._id).length > 0){
+                        splitter.toPay -= state.room.items[payload].price/state.room.items[payload].divideAmoung;
+                        return splitter;
+                    }
+                    return splitter;
+                }),
                 room: {
                     ...state.room,
                     items: state.room.items.filter((item, index) => index !== payload)
@@ -53,7 +60,13 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 room: {
                     ...state.room,
-                    sum: state.room.sum + state.room.items[payload.itemIndex].price/state.room.items[payload.itemIndex].divideAmoung,
+                    splitters: state.room.splitters.map(splitter => {
+                        if(splitter.splitter._id === payload.payee._id){
+                          splitter.toPay += state.room.items[payload.itemIndex].price/state.room.items[payload.itemIndex].divideAmoung;
+                          return splitter;
+                        }
+                        return splitter;
+                    }),
                     items: state.room.items.map((item, i) => {
                         if(i === payload.itemIndex){
                             return {
@@ -69,7 +82,13 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 room: {
                     ...state.room,
-                    sum: state.room.sum - state.room.items[payload.itemIndex].price/state.room.items[payload.itemIndex].divideAmoung,
+                    splitters: state.room.splitters.map(splitter => {
+                        if(splitter.splitter._id === payload.payee._id){
+                          splitter.toPay -= state.room.items[payload.itemIndex].price/state.room.items[payload.itemIndex].divideAmoung;
+                          return splitter;
+                        }
+                        return splitter;
+                    }),
                     items: state.room.items.map((item, i) => {
                         if(i === payload.itemIndex){
                             return {

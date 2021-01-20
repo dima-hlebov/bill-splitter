@@ -50,8 +50,9 @@
                 word-wrap: break-all
                 text-align: center
                 border-left: 2px solid $primary-c
-        &--selected
+        &--success
             @include selected
+            background-color: #159494
         &:hover
             @include selected
 
@@ -62,10 +63,14 @@
         width: 100%
     &-divide
         width: 30%
+        justify-content: center
     &-price
         width: 30%
+        justify-content: center
     &-admin
         width: 20%
+        justify-content: center
     &-remove
+        justify-content: center
         padding-left: 0.5rem
         width: calc(32px + 0.5rem)

@@ -7,11 +7,13 @@ import { useHistory } from 'react-router-dom';
 import MyInput from './my-input';
 import Button from '../button';
 import {WithRoomService} from '../with-service';
-import { addRoom, fetchRooms } from '../../actions/rooms'
+import { addRoom, fetchRooms } from '../../actions/rooms';
+import { handleError } from '../../helper';
 
 import './form.sass';
 
-const addRoomForm = ({RoomService, addRoom, fetchRooms}) => {
+const AddRoomForm = ({RoomService, addRoom, fetchRooms}) => {
+  const history = useHistory();
 
   return (
       <Formik
@@ -34,13 +36,7 @@ const addRoomForm = ({RoomService, addRoom, fetchRooms}) => {
               resetForm({})
             })
             .catch(e => {
-              if(e.response){
-                  if(e.response.status === 401){
-                    useHistory.push("/sign-in");
-                  }
-              }else{
-                console.log(e);
-              }
+                handleError(e, history)
             });
           setSubmitting(false);
         }}
@@ -63,4 +59,4 @@ const mapDispatchToProps = {
   fetchRooms
 }
 
-export default WithRoomService()(connect(null, mapDispatchToProps)(addRoomForm));
+export default WithRoomService()(connect(null, mapDispatchToProps)(AddRoomForm));

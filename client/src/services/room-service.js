@@ -50,14 +50,8 @@ export default class RoomService{
       return await axios.delete(`${this._apiBase}/${roomId}/items/${itemId}/payee`, { headers: this.authHeader() });
     }
 
-    async pay(roomId){
-      return await axios.get(`${this._apiBase}/${roomId}/payment`, { headers: this.authHeader() });
+    async pay(roomId, isPaid){
+      return await axios.put(`${this._apiBase}/${roomId}/payment`, {isSplitterPaid: isPaid}, { headers: this.authHeader() });
     }
 
-    async liqPay(){
-      return await axios.post(`https://www.liqpay.ua/api/3/checkout`, {
-          data: 'eyJhY3Rpb24iOiJwMnAiLCJhbW91bnQiOiIxIiwiY3VycmVuY3kiOiJVQUgiLCJkZXNjcmlwdGlvbiI6ImRlc2NyaXB0aW9uIHRleHQiLCJvcmRlcl9pZCI6Im9yZGVyX2lkXzEiLCJ2ZXJzaW9uIjoiMyIsInB1YmxpY19rZXkiOiJzYW5kYm94X2k2MjA1MjI1MzYzOSJ9',
-          signature: 'qdhsIEDMd6mKNZ7ueXVIvpeH2Xg='
-        });
-    }
 };

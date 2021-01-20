@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col } from 'reactstrap';
+import { Container, Row, Col, Spinner } from 'reactstrap';
 import { WithRoomService } from '../with-service';
 import { handleError } from '../../helper';
 import { useParams, useHistory } from 'react-router-dom';
@@ -16,8 +16,9 @@ const InvitePage = ({RoomService}) => {
             const fetchRooms = async () => {
                 return await RoomService.addInvitedUser(roomId)
                     .then(response => {
-                        history.push("/rooms");
+                        history.push(`/rooms/${roomId}`);
                     })
+                    .catch(e => console.log(e))
                     .catch(e => handleError(e.response, history));
             };
             setResponse(await fetchRooms());
@@ -31,7 +32,7 @@ const InvitePage = ({RoomService}) => {
             <Row>
             <Col>
                 <div className="mt-5 text-center">
-                    {response}
+                    {response ? response : <Spinner/>}
                 </div>
             </Col>
             </Row>

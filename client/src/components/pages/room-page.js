@@ -2,9 +2,7 @@ import React, { useEffect, useState }from 'react';
 import { Container, Row, Col, Spinner } from 'reactstrap';
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
-// import { Spinner } from 'reactstrap';
 
-import Button from '../button';
 import Heading from "../heading";
 import List, {Item} from '../list'
 import Splitters, {Splitter} from '../splitters'; 
@@ -15,7 +13,7 @@ import MyToast from '../toast'
 import {WithRoomService} from '../with-service';
 import { setRoom, removeItem, selectItem, unSelectItem } from '../../actions/room'
 import { showModal, hideModal } from '../../actions/modal'
-import { formatDate, handleError } from '../../helper';
+import { handleError } from '../../helper';
 
 import '../forms/input.sass';
 import Share from '../share';
@@ -44,10 +42,10 @@ function RoomPage({ RoomService, loading, user, room, setRoom, removeItem, selec
 
       
     const renderSplitters = () => {
-        if(room.members){
-            return room.members.map((splitter, i) => {
-                const { _id: id, firstName, secondName } = splitter;
-                return (<Splitter key={id} id={`member${i}`} firstName={firstName} lastName={secondName}/>);
+        if(room.splitters){
+            return room.splitters.map((splitter, i) => {
+                const { _id: id, firstName, secondName } = splitter.splitter;
+                return (<Splitter key={id} id={`member${i}`} firstName={firstName} lastName={secondName} toPay={splitter.toPay}/>);
             })
         }
         return (<div className="d-flex justify-content-center"><Spinner color="secondary"/></div> );
@@ -79,24 +77,26 @@ function RoomPage({ RoomService, loading, user, room, setRoom, removeItem, selec
 
     const renderItems = () => {
         return room.items.map((item, i) => {
-            const { _id, name, price, divideAmoung, payees } = item;
+            const { _id, name, price, divideAmoung, payees, isPaid } = item;
             return room.isAdmin 
                 ? <Item 
                     key={_id} 
                     text={`${name}`} 
-                    divideAmoung={divideAmoung} 
+                    divideAmoung={divideAmoung}
                     price={price}
                     onDelete={() => showModal({index: i, id: item._id, name})}
                     onToggleItem={() => onToggle(i, _id)}
                     payees={payees}
-                    admin/>
+                    admin
+                    isPaid={isPaid}/>
                 : <Item 
                     key={_id} 
                     text={`${name}`} 
                     divideAmoung={divideAmoung} 
                     price={price}
                     onToggleItem={() => onToggle(i, _id)}
-                    payees={payees}/>;
+                    payees={payees}
+                    isPaid={isPaid}/>;
             });
     };
 
@@ -117,11 +117,13 @@ function RoomPage({ RoomService, loading, user, room, setRoom, removeItem, selec
         <Container>
             <Row>
                 <Col>
-                    <Heading tag="h2" className="heading--2" text={`Room: ${(room.name ? room.name : "")} ${(formatDate(room.createdAt))}`}/>
+                    <Heading tag="h2" className="heading--2" text={`Room: ${(room.name ? room.name : "")}`}/>
                     <Row>
                         <Col md={{size: 5}}>
+                            <div className="d-flex align-items-center justify-content-center">
                                 <Heading tag="h3" className="heading--3 heading--center" text="Splitters"/>
-                                <Share link={`http://localhost:3000/rooms/${room._id}/invite`}/>
+                                <div className="ml-3"><Share link={`http://localhost:3000/rooms/${room._id}/invite`}/></div>
+                            </div>
                             <Splitters>
                                 {renderSplitters()}
                             </Splitters>
