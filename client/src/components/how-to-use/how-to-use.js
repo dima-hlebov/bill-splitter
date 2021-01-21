@@ -30,7 +30,6 @@ const items = () => {
     const itemContent = [ 
         ['1. Just make a group', groupImg],
         ['2. Add items you paied for', ItemListImg],
-        ['2.a Or take a photo and our application\n will get them for you', receiptImg],
         ['3. Give your friends a link',  shareLinkImg],
         ['4. Collect money',  collectImg] 
     ];
