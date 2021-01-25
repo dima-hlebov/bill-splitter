@@ -9,9 +9,7 @@ router.post('/', auth.required, (req, res, next) => {
   const { body: room, payload: { id }} = req;
 
   if(!room.name) {
-    return res.status(422).json({
-      error: 'Room name is required'
-    });
+    return res.status(422).json('Room name is required');
   }
 
   room.admin = id;
@@ -126,6 +124,22 @@ router.put('/:roomId/invite', auth.required, (req, res, next) => {
 // add new item
 router.post('/:roomId/items', auth.required, (req, res, next) => {
   const { body: newItem, params: { roomId }, payload: { id: userId }} = req;
+
+  const isValuePositive = (value, name) =>{
+    if(!value) {
+      if(value < 1){
+        return res.status(422).json(`${name} must be positive`);
+      }
+      return res.status(422).json(`${name} is required`);
+    }
+  };
+
+  if(!newItem.name) {
+    return res.status(422).json('Item name is required');
+  }
+
+  isValuePositive(newItem.divideAmoung, "Divide amoung");
+  isValuePositive(newItem.price, "Price");
   
   const itemWRoundedPrice = {
     ...newItem,
@@ -140,9 +154,7 @@ router.post('/:roomId/items', auth.required, (req, res, next) => {
         .then(room => res.json({ room }))
         .catch(err => res.status(500).json(err));
     }
-
-    let err = new Error('Permission to add item denied');
-    return res.status(403).json(err);
+    return res.status(403).json('Permission to add item denied');
   });
 });
 
@@ -244,9 +256,7 @@ router.put('/:roomId/payment', auth.required, (req, res, next) => {
             splitter.splitterPaid = false;
             return splitter;
           }
-          return splitter;
         }
-        // splitter.splitterPaid = false;
         return splitter;
       });
 
@@ -271,39 +281,5 @@ router.put('/:roomId/payment', auth.required, (req, res, next) => {
     })
     .catch(err => res.status(500).json(err));
 });
-
-// router.put('/:roomId/unpayment', auth.required, (req, res, next) => {
-//   const { params: {roomId}, payload: { id: userId } } = req;
-
-//   return Rooms.findById(roomId)
-//     .then(room => {
-//       room.splitters.map(splitter => {
-//         if(splitter.splitter._id.toString() === userId){
-//           splitter.splitterPaid = false;
-//           return splitter;
-//         }
-//         return splitter;
-//       });
-
-//       // chek what items was fully paid
-//       const paidSplitters = room.splitters.filter(splitter => splitter.splitterPaid);
-//       room.items.map(item => {
-//         const paidPayeesNum = item.payees.filter(payee =>{
-//           return paidSplitters.filter(paidSplitter => {
-//             return paidSplitter.splitter._id.toString() === payee.toString();
-//           }).length > 0;
-//         }).length;
-//         if(paidPayeesNum !== item.divideAmoung){
-//           item.isPaid = false;
-//           return item;
-//         }
-//         return item;
-//       });
-//       return room.save()
-//         .then(room => res.json({ room }))
-//         .catch(err => res.status(500).json(err));
-//     })
-//     .catch(err => res.status(500).json(err));
-// });
 
 module.exports = router;

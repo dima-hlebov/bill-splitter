@@ -1,9 +1,9 @@
 export const formatDate = (dateStr) => {
     const date = new Date(dateStr);
-    const year = date.getUTCFullYear() + 1,
-          month = date.getUTCMonth(),
+    const year = date.getUTCFullYear(),
+          month = date.getUTCMonth()+1,
           day = date.getUTCDate();
-    return `${day}.${month}.${year}`
+    return `${('0' + day).slice(-2)}.${('0' + month).slice(-2)}.${year}`
 }
 
 export const handleError = (response, history) => {

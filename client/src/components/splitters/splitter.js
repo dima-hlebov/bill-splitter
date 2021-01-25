@@ -15,7 +15,7 @@ const Splitter = ({ firstName, lastName, id, toPay }) => {
             {id 
                 ? <UncontrolledTooltip  placement="top" autohide={false} target={id}>
                         <div>{`${firstName} ${lastName}`}</div>
-                        <div>{toPay ? `To pay: ${toPay}` : null}</div>
+                        <div>{toPay || toPay === 0 ? `To pay: ${toPay}` : null}</div>
                   </UncontrolledTooltip>
                 : null
             }

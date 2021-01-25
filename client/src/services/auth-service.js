@@ -23,5 +23,6 @@ export default class AuthService{
     
     logout() {
         localStorage.removeItem("user");
+        sessionStorage.clear();
     };
 }

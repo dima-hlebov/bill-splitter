@@ -10,7 +10,7 @@ function SignUpPage() {
       <Container>
         <Row>
           <Col>
-            <Heading tag="h2" className="heading" text="Sign up" />
+            <Heading tag="h2" className="headin heading--2" text="Sign up" />
             <div className="d-flex flex-column align-items-center">
               <Form/>
             </div>

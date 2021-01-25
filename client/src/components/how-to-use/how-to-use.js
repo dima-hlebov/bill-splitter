@@ -6,7 +6,7 @@ import './how-to-use.sass'
 import groupImg from './img/group.png'
 import collectImg from './img/collect.png'
 import ItemListImg from './img/item-list.png'
-import receiptImg from './img/receipt.png'
+// import receiptImg from './img/receipt.png'
 import shareLinkImg from './img/share-link.png'
 
 const HowToUse = () => {

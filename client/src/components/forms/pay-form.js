@@ -18,12 +18,16 @@ const PayForm = ({RoomService, room, user}) => {
     };
 
     const getToPay = () => {
-        const currSplitter = getCurrSplitter();
-        return +currSplitter.toPay ? +currSplitter.toPay.toFixed(2) : 0;
+        const currSplitter = getCurrSplitter()
+        const { toPay = 0} = currSplitter ? currSplitter : {};
+
+        return +toPay.toFixed(2);
     };
 
     const getIsPaid = () => {
-        return getCurrSplitter().splitterPaid;
+        const currSplitter = getCurrSplitter()
+        const { splitterPaid = false } = currSplitter ? currSplitter : {};
+        return splitterPaid;
     };
 
     return (

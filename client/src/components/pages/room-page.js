@@ -58,7 +58,9 @@ function RoomPage({ RoomService, loading, user, room, setRoom, removeItem, selec
             .catch(e => handleError(e.response, history));
     }
 
-    const onToggle = (index, itemId) => {
+    const onToggle = (index, itemId, event) => {
+        if(event) event.stopPropagation();
+        
         if(!(room.items[index].payees.filter(payee => payee._id === user._id).length > 0)){
             RoomService.selectItem(room._id, itemId)
                 .then(() => selectItem(index, user))
@@ -94,7 +96,7 @@ function RoomPage({ RoomService, loading, user, room, setRoom, removeItem, selec
                     text={`${name}`} 
                     divideAmoung={divideAmoung} 
                     price={price}
-                    onToggleItem={() => onToggle(i, _id)}
+                    onToggleItem={(e) => onToggle(i, _id, e)}
                     payees={payees}
                     isPaid={isPaid}/>;
             });
@@ -122,7 +124,10 @@ function RoomPage({ RoomService, loading, user, room, setRoom, removeItem, selec
                         <Col md={{size: 5}}>
                             <div className="d-flex align-items-center justify-content-center">
                                 <Heading tag="h3" className="heading--3 heading--center" text="Splitters"/>
-                                <div className="ml-3"><Share link={`http://localhost:3000/rooms/${room._id}/invite`}/></div>
+                                {room.isAdmin 
+                                    ? <div className="ml-3"><Share link={`http://localhost:3000/rooms/${room._id}/invite`}/></div>
+                                    : null
+                                }
                             </div>
                             <Splitters>
                                 {renderSplitters()}
