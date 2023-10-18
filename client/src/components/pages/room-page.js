@@ -1,16 +1,16 @@
-import React, { useEffect, useState }from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Spinner } from 'reactstrap';
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 
 import Heading from "../heading";
-import List, {Item} from '../list'
-import Splitters, {Splitter} from '../splitters'; 
+import List, { Item } from '../list'
+import Splitters, { Splitter } from '../splitters';
 import AddItemForm from '../forms/add-item-form';
 import PayForm from '../forms/pay-form';
 import { AlertModal } from "../modals";
 import MyToast from '../toast'
-import {WithRoomService} from '../with-service';
+import { WithRoomService } from '../with-service';
 import { setRoom, removeItem, selectItem, unSelectItem } from '../../actions/room'
 import { showModal, hideModal } from '../../actions/modal'
 import { handleError } from '../../helper';
@@ -23,34 +23,34 @@ function RoomPage({ RoomService, loading, user, room, setRoom, removeItem, selec
 
     const [response, setResponse] = useState("");
 
-    useEffect(() =>{
+    useEffect(() => {
         (async function fetch() {
             const fetchRooms = async () => {
-            await RoomService.getRoom(room._id)
-                .then(response => {
-                    setRoom(response.data.room)
-                })
-                .catch(e => {
-                    handleError(e.response, history);
-                });
+                await RoomService.getRoom(room._id)
+                    .then(response => {
+                        setRoom(response.data.room)
+                    })
+                    .catch(e => {
+                        handleError(e.response, history);
+                    });
             };
             fetchRooms();
 
         })();
         // eslint-disable-next-line
-      }, []);
+    }, []);
 
-      
+
     const renderSplitters = () => {
-        if(room.splitters){
+        if (room.splitters) {
             return room.splitters.map((splitter, i) => {
                 const { _id: id, firstName, secondName } = splitter.splitter;
-                return (<Splitter key={id} id={`member${i}`} firstName={firstName} lastName={secondName} toPay={splitter.toPay}/>);
+                return (<Splitter key={id} id={`member${i}`} firstName={firstName} lastName={secondName} toPay={splitter.toPay} />);
             })
         }
-        return (<div className="d-flex justify-content-center"><Spinner color="secondary"/></div> );
+        return (<div className="d-flex justify-content-center"><Spinner color="secondary" /></div>);
     }
-    
+
     const onDelete = (i, itemId) => {
         RoomService.deleteItem(room._id, itemId)
             .then(() => hideModal())
@@ -59,18 +59,18 @@ function RoomPage({ RoomService, loading, user, room, setRoom, removeItem, selec
     }
 
     const onToggle = (index, itemId, event) => {
-        if(event) event.stopPropagation();
-        
-        if(!(room.items[index].payees.filter(payee => payee._id === user._id).length > 0)){
+        if (event) event.stopPropagation();
+
+        if (!(room.items[index].payees.filter(payee => payee._id === user._id).length > 0)) {
             RoomService.selectItem(room._id, itemId)
                 .then(() => selectItem(index, user))
                 .catch(e => {
                     setResponse(handleError(e.response, history));
-                    window.setTimeout(() =>{
+                    window.setTimeout(() => {
                         setResponse(null)
                     }, 2000)
                 });
-        }else{
+        } else {
             RoomService.unSelectItem(room._id, itemId)
                 .then(() => unSelectItem(index, user))
                 .catch(e => handleError(e.response, history));
@@ -80,93 +80,93 @@ function RoomPage({ RoomService, loading, user, room, setRoom, removeItem, selec
     const renderItems = () => {
         return room.items.map((item, i) => {
             const { _id, name, price, divideAmoung, payees, isPaid } = item;
-            return room.isAdmin 
-                ? <Item 
-                    key={_id} 
-                    text={`${name}`} 
+            return room.isAdmin
+                ? <Item
+                    key={_id}
+                    text={`${name}`}
                     divideAmoung={divideAmoung}
                     price={price}
-                    onDelete={() => showModal({index: i, id: item._id, name})}
+                    onDelete={() => showModal({ index: i, id: item._id, name })}
                     onToggleItem={() => onToggle(i, _id)}
                     payees={payees}
                     admin
-                    isPaid={isPaid}/>
-                : <Item 
-                    key={_id} 
-                    text={`${name}`} 
-                    divideAmoung={divideAmoung} 
+                    isPaid={isPaid} />
+                : <Item
+                    key={_id}
+                    text={`${name}`}
+                    divideAmoung={divideAmoung}
                     price={price}
                     onToggleItem={(e) => onToggle(i, _id, e)}
                     payees={payees}
-                    isPaid={isPaid}/>;
-            });
+                    isPaid={isPaid} />;
+        });
     };
 
     const getHeaders = () => {
-        if (room.isAdmin){
-            return [{header:'Name', className: 'item-name'}, 
-                    {header:'Divide amoung', className: 'item-divide'}, 
-                    {header:'Price', className: 'item-price'}, 
-                    {header:'', className: 'item-remove'}]
+        if (room.isAdmin) {
+            return [{ header: 'Name', className: 'item-name' },
+            { header: 'Divide amoung', className: 'item-divide' },
+            { header: 'Price', className: 'item-price' },
+            { header: '', className: 'item-remove' }]
         }
-        return [{header:'Name', className: 'item-name'}, 
-                {header:'Divide amoung', className: 'item-divide'}, 
-                {header:'Price', className: 'item-price'}]
+        return [{ header: 'Name', className: 'item-name' },
+        { header: 'Divide amoung', className: 'item-divide' },
+        { header: 'Price', className: 'item-price' }]
     };
 
     return (
         <section>
-        <Container>
-            <Row>
-                <Col>
-                    <Heading tag="h2" className="heading--2" text={`Room: ${(room.name ? room.name : "")}`}/>
-                    <Row>
-                        <Col md={{size: 5}}>
-                            <div className="d-flex align-items-center justify-content-center">
-                                <Heading tag="h3" className="heading--3 heading--center" text="Splitters"/>
-                                {room.isAdmin 
-                                    ? <div className="ml-3"><Share link={`http://localhost:3000/rooms/${room._id}/invite`}/></div>
-                                    : null
-                                }
-                            </div>
-                            <Splitters>
-                                {renderSplitters()}
-                            </Splitters>
-                        </Col>
-                        <Col>
-                            <Heading tag="h3" className="heading--3 heading--center" text="Items"/>
-                            {
-                                (loading) 
-                                    ? <div className="d-flex justify-content-center"><Spinner color="secondary"/></div> 
+            <Container>
+                <Row>
+                    <Col>
+                        <Heading tag="h2" className="heading--2" text={`Room: ${(room.name ? room.name : "")}`} />
+                        <Row>
+                            <Col md={{ size: 5 }}>
+                                <div className="d-flex align-items-center justify-content-center">
+                                    <Heading tag="h3" className="heading--3 heading--center" text="Splitters" />
+                                    {room.isAdmin
+                                        ? <div className="ml-3"><Share link={`http://localhost:3000/rooms/${room._id}/invite`} /></div>
+                                        : null
+                                    }
+                                </div>
+                                <Splitters>
+                                    {renderSplitters()}
+                                </Splitters>
+                            </Col>
+                            <Col>
+                                <Heading tag="h3" className="heading--3 heading--center" text="Items" />
+                                {
+                                    (loading)
+                                        ? <div className="d-flex justify-content-center"><Spinner color="secondary" /></div>
                                         : (!room.items)
-                                            ? <div className="mt-4 mb-4 text-center">No items yet.</div> 
+                                            ? <div className="mt-4 mb-4 text-center">No items yet.</div>
                                             : (room.items.length !== 0)
                                                 ? <>
                                                     <List headers={getHeaders()}>
-                                                            {renderItems()}
+                                                        {renderItems()}
                                                     </List>
-                                                    <PayForm/>
-                                                  </>
+                                                    <PayForm />
+                                                </>
                                                 : <div className="mt-4 mb-4 text-center">No items yet.</div>
-                            }
-                            {room.isAdmin ? <AddItemForm/> : null}
-                        </Col>
-                    </Row>
-                    <MyToast text={response}/>
-                </Col>
-            </Row>
-        </Container>
-        <AlertModal 
-            modal={modal} 
-            onClose={hideModal} 
-            onConfirm={() => onDelete(modalProps.index, modalProps.id)} 
-            text={`Are you sure you want to remove \n
+                                }
+                                {room.isAdmin ? <AddItemForm /> : null}
+                            </Col>
+                        </Row>
+                        <MyToast text={response} />
+                    </Col>
+                </Row>
+            </Container>
+            <AlertModal
+                modal={modal}
+                onClose={hideModal}
+                onConfirm={() => onDelete(modalProps.index, modalProps.id)}
+                text={`Are you sure you want to remove \n
             ${modalProps.name}`} />
         </section>
     );
 }
 
-const mapStateToProps = ({auth: {user}, room: { room, loading }, modal: {modal, modalProps}}) => {
+const mapStateToProps = ({ auth: { user }, room: { room, loading }, modal: { modal, modalProps } }) => {
     return {
         room,
         modal,
@@ -174,15 +174,15 @@ const mapStateToProps = ({auth: {user}, room: { room, loading }, modal: {modal, 
         loading,
         user
     };
-  };
-  
-  const mapDispatchToProps = {
+};
+
+const mapDispatchToProps = {
     setRoom,
     removeItem,
     showModal,
     hideModal,
     selectItem,
     unSelectItem
-  }
+}
 
-export default WithRoomService()(connect(mapStateToProps, mapDispatchToProps)(RoomPage)) ;
+export default WithRoomService()(connect(mapStateToProps, mapDispatchToProps)(RoomPage));

@@ -9,9 +9,9 @@ import HowToUse from '../how-to-use/how-to-use';
 function HomePage() {
   return (
     <>
-        <TryNow/>
-        <About/>
-        <HowToUse/>
+      <TryNow />
+      <About />
+      <HowToUse />
     </>
   );
 }
