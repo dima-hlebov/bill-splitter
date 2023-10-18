@@ -1,26 +1,22 @@
 import axios from "axios";
 
-export default class AuthService{
-    constructor(){
-        this._apiBase = 'http://localhost:8000/api/auth'
+export default class AuthService {
+    async signup(newUser) {
+        return await axios.post(`${process.env.REACT_APP_API_BASE}/auth/signup/`, newUser)
     };
 
-    async signup(newUser){
-        return await axios.post(`${this._apiBase}/signup/`, newUser)
-    };
-
-    async signin(user){
-        return await axios.post(`${this._apiBase}/signin/`, user)
+    async signin(user) {
+        return await axios.post(`${process.env.REACT_APP_API_BASE}/auth/signin/`, user)
             .then((response) => {
                 if (response.data.user.token) {
                     const logedInUser = response.data.user;
                     localStorage.setItem("user", JSON.stringify(logedInUser));
                 }
-        
+
                 return response;
             });
     };
-    
+
     logout() {
         localStorage.removeItem("user");
         sessionStorage.clear();

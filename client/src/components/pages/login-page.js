@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col} from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import { Link } from "react-router-dom";
 
 import Heading from "../heading";
@@ -15,6 +15,7 @@ function LoginPage() {
             <Heading tag="h2" className="heading heading--2" text="Sign in" />
             <div className="d-flex flex-column align-items-center">
               <Form />
+              <span>Demo: demo@demo.com:demo1234</span>
               <span >Don't have account yet? Fast<Link to="/sign-up"> sign up</Link></span>
             </div>
           </Col>

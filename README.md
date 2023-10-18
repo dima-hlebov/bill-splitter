@@ -2,6 +2,8 @@
 
 Bill Splitter is your go-to platform for effortlessly sharing expenses with friends and family. Our user-friendly app handles the math, so you don't have to. With Bill Splitter, enjoy stress-free bill splitting for every occasion.
 
+[Bill Splitter App](https://bill-splitter-xf73.vercel.app/)
+
 ## Key Features
 
 - **Expense Tracking:** Easily record and categorize expenses, from restaurant bills to grocery purchases.
