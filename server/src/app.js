@@ -11,7 +11,7 @@ mongoose.promise = global.Promise;
 const app = express();
 
 app.use(cors({
-    origin: 'https://splitmybill.vercel.app',
+    origin: '*',
     preflightContinue: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
