@@ -19,13 +19,6 @@ const app = express();
 //     allowedHeaders: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
 // }));
 
-app.use((req, res, next) => {
-    if (req.method === "OPTIONS") {
-        res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
-        return res.status(200).json({});
-    }
-    next();
-});
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -38,5 +31,13 @@ require('./models/Users');
 require('./models/Rooms');
 require('./config/passport');
 app.use(require('./routes'));
+
+app.use((req, res, next) => {
+    if (req.method === "OPTIONS") {
+        res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
+        return res.status(200).json({});
+    }
+    next();
+});
 
 app.listen(8000, () => console.log('Server running on port - 8000'));
