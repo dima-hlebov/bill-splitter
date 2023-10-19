@@ -7,25 +7,25 @@ const Users = mongoose.model('Users');
 router.post('/signup', auth.optional, async (req, res, next) => {
   const { body: user } = req;
 
-  if(!user.email) {
+  if (!user.email) {
     return res.status(422).json({
       error: 'Email is required'
     });
   }
 
-  if(!user.password) {
+  if (!user.password) {
     return res.status(422).json({
-      error:'Password is required',
+      error: 'Password is required',
     });
   }
 
-  const foundUser = await Users.findOne({email: user.email});
-  
-  if(foundUser){
+  const foundUser = await Users.findOne({ email: user.email });
+
+  if (foundUser) {
     return res.status(400).json({
-      error:'Email is already in use'
-    });  
-  }else{
+      error: 'Email is already in use'
+    });
+  } else {
     const newUser = new Users(user);
     newUser.setPassword(user.password);
     return newUser.save()
@@ -34,30 +34,31 @@ router.post('/signup', auth.optional, async (req, res, next) => {
 });
 
 router.post('/signin', auth.optional, (req, res, next) => {
+  console.log(req)
   const { body: user } = req;
 
-  if(!user.email) {
+  if (!user.email) {
     return res.status(422).json({
-      error:'Email is required'
+      error: 'Email is required'
     });
   }
 
-  if(!user.password) {
+  if (!user.password) {
     return res.status(422).json({
-      error:'Password is required'
+      error: 'Password is required'
     });
   }
 
   return passport.authenticate('local', { session: false, failureFlash: true }, (err, passportUser, info) => {
-    if(err) {
+    if (err) {
       return next(err);
     }
 
-    if(passportUser) {
+    if (passportUser) {
       const user = passportUser;
       user.token = passportUser.generateJWT();
       return res.json({ user: user.toAuthJSON() });
-    }else{
+    } else {
       return res.status(400).json({
         error: info.message
       })
