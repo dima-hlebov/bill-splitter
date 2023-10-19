@@ -10,15 +10,20 @@ mongoose.promise = global.Promise;
 
 const app = express();
 
+app.use(cors({
+    origin: 'https://splitmybill.vercel.app',
+    preflightContinue: true,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+}));
+
 app.use((req, res, next) => {
     if (req.method === "OPTIONS") {
-        res.header("Access-Control-Allow-Origin", "https://splitmybill.vercel.app");
         res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
         return res.status(200).json({});
     }
     next();
 });
-
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
