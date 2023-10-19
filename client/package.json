@@ -1,6 +1,5 @@
 {
   "name": "bill-splitter",
-  "proxy": "https://bill-splitter-api.vercel.app/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
