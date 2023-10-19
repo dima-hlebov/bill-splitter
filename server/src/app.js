@@ -25,6 +25,7 @@ app.use(cors({
     optionsSuccessStatus: 204,
     allowedHeaders: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
 }));
+app.options("*", cors())
 
 require('./models/Users');
 require('./models/Rooms');
