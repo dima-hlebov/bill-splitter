@@ -5,6 +5,8 @@ const auth = require('../auth');
 const Users = mongoose.model('Users');
 
 router.post('/signup', auth.optional, async (req, res, next) => {
+  res.setHeader('Access-Control-Allow-Credentials', true)
+  res.setHeader('Access-Control-Allow-Origin', '*')
   const { body: user } = req;
 
   if (!user.email) {
