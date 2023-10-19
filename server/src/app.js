@@ -4,22 +4,19 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 require('dotenv').config()
 
-const cors = require('cors');
-
 mongoose.promise = global.Promise;
 
 const app = express();
 
-app.use(cors({
-    credentials: true,
-    methods: ["POST", "GET", "PUT", "DELETE"],
-    origin: 'https://splitmybill.vercel.app'
-}));
-
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://splitmybill.vercel.app/');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.header('Access-Control-Allow-Headers', "Origin, X-Requested-With, Content-Type, Accept");
+    res.setHeader('Access-Control-Allow-Origin', 'https://splitmybill.vercel.app/');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Credentials', true)
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Authorization, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    )
+    res.setHeader("Authorization: *");
     next();
 });
 
