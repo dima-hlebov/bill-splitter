@@ -33,7 +33,7 @@ router.post('/signup', auth.optional, async (req, res, next) => {
   }
 });
 
-router.post('/signin', auth.optional, (req, res, next) => {
+router.options('/signin', auth.optional, (req, res, next) => {
   const { body: user } = req;
 
   if (!user.email) {
