@@ -12,7 +12,7 @@ const app = express();
 
 app.use(cors({
     credentials: true,
-    origin: 'https://splitmybill.vercel.app/'
+    origin: 'https://splitmybill.vercel.app'
 }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
