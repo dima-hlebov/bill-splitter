@@ -16,6 +16,13 @@ app.use(cors({
     origin: 'https://splitmybill.vercel.app'
 }));
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'https://splitmybill.vercel.app');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+});
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(session({ secret: 'bill-splitter', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
