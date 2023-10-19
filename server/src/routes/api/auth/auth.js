@@ -34,7 +34,6 @@ router.post('/signup', auth.optional, async (req, res, next) => {
 });
 
 router.post('/signin', auth.optional, (req, res, next) => {
-  console.log(req)
   const { body: user } = req;
 
   if (!user.email) {
