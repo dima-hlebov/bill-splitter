@@ -125,7 +125,7 @@ function RoomPage({ RoomService, loading, user, room, setRoom, removeItem, selec
                                 <div className="d-flex align-items-center justify-content-center">
                                     <Heading tag="h3" className="heading--3 heading--center" text="Splitters" />
                                     {room.isAdmin
-                                        ? <div className="ml-3"><Share link={`http://localhost:3000/rooms/${room._id}/invite`} /></div>
+                                        ? <div className="ml-3"><Share link={`https://splitmybill.vercel.app/rooms/${room._id}/invite`} /></div>
                                         : null
                                     }
                                 </div>
