@@ -33,6 +33,11 @@ https://splitmybill.vercel.app/
   - Passport.js
   - MongoDB with Mongoose
 
+## Coming soon
+
+- Receipt parser
+- Payment system
+
 ## Contributions
 
 We welcome contributions from the open-source community. Whether it's bug fixes, new features, or improvements, your contributions help make BillSplitter better for everyone. 
