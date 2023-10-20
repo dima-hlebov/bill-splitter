@@ -196,7 +196,7 @@ router.post('/:roomId/items/:itemId/payee', auth.required, (req, res, next) => {
     .then(room => {
       const selectedItemIndex = room.items.findIndex(item => item._id.toString() === itemId);
       const selectedItem = room.items[selectedItemIndex];
-      if (selectedItem.length !== selectedItem.divideAmoung && !selectedItem.payees.includes(userId)) {
+      if (selectedItem.payees.length !== selectedItem.divideAmoung && !selectedItem.payees.includes(userId)) {
         // add payee to an item
         selectedItem.payees.push(userId);
         // increse toPay value for payee
