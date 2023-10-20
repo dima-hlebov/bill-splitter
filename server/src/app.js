@@ -11,14 +11,14 @@ mongoose.promise = global.Promise;
 const app = express();
 
 app.use(cors({
-    origin: '*',
+    origin: '',
     credentials: true,
-    optionsSuccessStatus: 200
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
 app.options("", cors({
-    origin: '*',
+    origin: '',
     credentials: true,
-    optionsSuccessStatus: 200
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
 }))
 
 app.use(bodyParser.urlencoded({ extended: false }));
